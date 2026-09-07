@@ -1,0 +1,4 @@
+Flask>=3.0,<4.0
+genlayer-py>=0.13,<0.17
+genlayer-test>=0.29,<0.30
+genvm-linter>=0.11,<0.12

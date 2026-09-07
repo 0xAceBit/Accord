@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accord — work agreements that settle their own arguments</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="nav">
+        <div class="wrap">
+            <a class="wordmark" href="#top">
+                <i class="fa-solid fa-scale-balanced"></i> Accord
+            </a>
+
+            <nav>
+                <a href="#post-role">Post a role</a>
+                <a href="#build-profile">Find work</a>
+                <a href="#dispute">How disputes work</a>
+
+                <!-- Added login/registration widget -->
+                <span id="auth-widget" class="auth-widget"></span>
+
+                <!-- New nav -->
+                <div id="auth-panel" class="auth-panel" hidden>
+                    <div class="auth-panel-inner">
+                        <div class="auth-tabs">
+                            <button type="button" class="auth-tab active" data-tab="login">Log in</button>
+                            <button type="button" class="auth-tab" data-tab="register">Register</button>
+                            <button type="button" class="auth-close" id="auth-close" aria-label="Close">×</button>
+                        </div>
+
+                        <form id="login-form" class="auth-form">
+                            <p class="form-error" id="login-error"></p>
+                            <div class="field"><label for="login-email">Email</label><input id="login-email"
+                                    type="email" required></div>
+                            <div class="field"><label for="login-password">Password</label><input id="login-password"
+                                    type="password" required></div>
+                            <button class="btn" type="submit">Log in</button>
+                        </form>
+
+                        <form id="register-form" class="auth-form" hidden>
+                            <p class="form-error" id="register-error"></p>
+                            <div class="field"><label for="register-name">Name</label><input id="register-name"
+                                    type="text" required></div>
+                            <div class="field"><label for="register-email">Email</label><input id="register-email"
+                                    type="email" required></div>
+                            <div class="field"><label for="register-password">Password</label><input
+                                    id="register-password" type="password" minlength="8" required></div>
+                            <button class="btn" type="submit">Create account</button>
+                        </form>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <section class="hero" id="top">
+        <div class="wrap">
+            <div>
+                <h1>Job listings that end in a signature, not a shrug.</h1>
+                <p class="lede">Post the role, list your skills, and see the overlap before anyone signs anything. If a
+                    term still won't budge, an onchain court settles it - not another email thread.</p>
+                <div class="ctas">
+                    <a class="btn" href="#post-role">Post a role</a>
+                    <a class="btn secondary" href="#build-profile">Create your profile</a>
+                </div>
+            </div>
+            <div class="agreement" aria-hidden="true">
+                <div class="pair">
+                    <div class="side">
+                        <div class="label">ROLE</div>
+                        <div class="role-name">Solidity Engineer</div>
+                        <span class="tag">solidity</span><span class="tag">foundry</span><span class="tag">evm</span>
+                        <div class="figure">4,200 USDC / month</div>
+                    </div>
+                    <div class="side">
+                        <div class="label">CANDIDATE</div>
+                        <div class="role-name">M. Okoye</div>
+                        <span class="tag">solidity</span><span class="tag">rust</span><span class="tag">evm</span>
+                        <div class="figure">4,800 USDC / month</div>
+                    </div>
+                </div>
+                <div class="overlap-badge">50% skill overlap</div>
+                <div class="divider">Pay expectations differ — see Clause IV</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="wrap">
+
+        <section class="clause" id="post-role">
+            <div class="clause-head">
+                <span class="clause-num">Clause I</span>
+                <h2>Post a role</h2>
+            </div>
+            <p class="clause-intro">Give it a title, describe the work in plain terms, and list the skills that actually
+                matter. That skill list is what the matching in Clause III reads.</p>
+            <div class="grid-2">
+                <form id="role-form">
+                    <p class="form-error" id="role-error"></p>
+                    <div class="field">
+                        <label for="role-title">Role title</label>
+                        <input id="role-title" type="text" placeholder="e.g. Solidity Engineer" required>
+                    </div>
+                    <div class="field">
+                        <label for="role-desc">Description</label>
+                        <textarea id="role-desc"
+                            placeholder="What the role covers, and what a good week looks like."></textarea>
+                    </div>
+                    <div class="field-row">
+                        <div class="field">
+                            <label for="role-skills">Skills (comma separated)</label>
+                            <input id="role-skills" type="text" placeholder="solidity, foundry, evm">
+                        </div>
+                        <div class="field">
+                            <label for="role-pay">Monthly pay, USDC</label>
+                            <input id="role-pay" type="number" placeholder="4200">
+                        </div>
+                    </div>
+                    <button class="btn" type="submit">Publish role</button>
+                </form>
+                <div>
+                    <div class="section-label">OPEN ROLES</div>
+                    <div id="role-list">
+                        <p class="empty-note">Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="clause" id="build-profile">
+            <div class="clause-head">
+                <span class="clause-num">Clause II</span>
+                <h2>Build a profile</h2>
+            </div>
+            <p class="clause-intro">List your skills the same plain way, link your résumé, and say what you'd expect to
+                be paid. Nothing here is scored or ranked — it's just what gets compared against open roles.</p>
+            <div class="grid-2">
+                <form id="profile-form">
+                    <p class="form-error" id="profile-error"></p>
+                    <div class="field">
+                        <label for="profile-name">Name</label>
+                        <input id="profile-name" type="text" placeholder="e.g. M. Okoye" required>
+                    </div>
+                    <div class="field">
+                        <label for="profile-resume">Résumé link</label>
+                        <input id="profile-resume" type="url" placeholder="https://...">
+                    </div>
+                    <div class="field-row">
+                        <div class="field">
+                            <label for="profile-skills">Skills (comma separated)</label>
+                            <input id="profile-skills" type="text" placeholder="solidity, rust, evm">
+                        </div>
+                        <div class="field">
+                            <label for="profile-rate">Expected pay, USDC / month</label>
+                            <input id="profile-rate" type="number" placeholder="4800">
+                        </div>
+                    </div>
+                    <button class="btn" type="submit">Save profile</button>
+                </form>
+                <div>
+                    <div class="section-label">CANDIDATES</div>
+                    <div id="profile-list">
+                        <p class="empty-note">Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="clause" id="matches">
+            <div class="clause-head">
+                <span class="clause-num">Clause III</span>
+                <h2>See the overlap</h2>
+            </div>
+            <p class="clause-intro">The match score is a plain skill overlap: shared skills divided by the total
+                distinct skills across both lists, computed on the server. No hidden weighting — you can read the same
+                list the algorithm reads.</p>
+            <div id="match-list">
+                <p class="empty-note">Loading...</p>
+            </div>
+        </section>
+
+        <section class="clause no-border" id="dispute">
+            <div class="clause-head">
+                <span class="clause-num">Clause IV</span>
+                <h2>When terms disagree</h2>
+            </div>
+            <p class="clause-intro">Skills can line up while a number still doesn't — salary, start date, scope. When
+                that happens, either side can raise a dispute on that specific term. It's filed with GenLayer's Internet
+                Court: a random panel of AI validators reviews the two positions and returns a ruling, usually within
+                minutes, without either side needing to agree first.</p>
+            <p class="court-note">The verdict below is computed with a placeholder rule (splitting the difference) and
+                stored for that role/profile pair. Swap <code>raise_dispute()</code> in <code>app.py</code> for a real
+                call to GenLayer's Intelligent Contracts when you're ready to make the ruling itself binding.</p>
+        </section>
+
+    </div>
+
+    <footer>
+        <div class="wrap">
+            <a class="wordmark" href="#top">
+                <i class="fa-solid fa-scale-balanced"></i> Accord
+            </a>
+            <p class="copyright">© 2024 Accord</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
