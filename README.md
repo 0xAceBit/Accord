@@ -38,3 +38,18 @@ Run the same verdict logic locally:
 ```
 
 This prints a verdict at `110000 USDC/month`. The local runner verifies the contract logic; deploying and executing the `genlayer` contract requires GenLayer Studio, GLSim, or a configured GenLayer network.
+
+## GenLayer relay
+
+The optional Node relay is in `dispute_relay.js` and uses the configured Studio contract address. The address is safe to keep in source; the signing key is not.
+
+Before using live disputes, revoke the private key that was shared in chat and create or use a funded Studio test account. In PowerShell, enter the replacement key directly in your local terminal:
+
+```powershell
+$env:ACCORD_SECRET_KEY = "replace-with-a-long-random-secret"
+$env:ACCORD_REQUIRE_AUTH = "1"
+$env:GENLAYER_PRIVATE_KEY = Read-Host "Enter the rotated GenLayer private key"
+\.venv\Scripts\python.exe app.py
+```
+
+The app will be available at `http://127.0.0.1:5000`. The relay uses `GENLAYER_CONTRACT_ADDR` from the environment when present; otherwise it uses the configured contract address in `app.py`.

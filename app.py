@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import sqlite3
+import subprocess
 from datetime import datetime, timezone
 from functools import wraps
 from pathlib import Path
@@ -17,6 +18,9 @@ DATABASE_PATH = Path(os.environ.get("ACCORD_DATABASE", BASE_DIR / "accord.db"))
 app = Flask(__name__, static_folder=str(BASE_DIR), static_url_path="")
 app.secret_key = os.environ.get("ACCORD_SECRET_KEY", "dev-only-change-me")
 REQUIRE_AUTH_FOR_WRITES = os.environ.get("ACCORD_REQUIRE_AUTH", "0") == "1"
+RELAY_SCRIPT = BASE_DIR / "dispute_relay.js"
+GENLAYER_CONTRACT_ADDRESS = "0x847882ff7F8259b45a5312Bcb042256b7e159B87"
+RELAY_TIMEOUT_SECONDS = 300
 
 
 def get_db() -> sqlite3.Connection:
@@ -162,6 +166,43 @@ def parse_money(payload: dict[str, Any], key: str) -> int:
 
 def bad_request(message: str):
     return jsonify({"error": message}), 400
+
+
+def call_dispute_relay(*args: str) -> dict[str, Any]:
+    """Call the optional Node relay and parse its final JSON response."""
+    contract_address = os.environ.get("GENLAYER_CONTRACT_ADDR", GENLAYER_CONTRACT_ADDRESS)
+    private_key = os.environ.get("GENLAYER_PRIVATE_KEY")
+    if not contract_address or not private_key:
+        raise RuntimeError(
+            "GENLAYER_CONTRACT_ADDR and GENLAYER_PRIVATE_KEY must be set"
+        )
+    if not RELAY_SCRIPT.is_file():
+        raise RuntimeError(f"relay script not found: {RELAY_SCRIPT}")
+
+    try:
+        result = subprocess.run(
+            ["node", str(RELAY_SCRIPT), *args],
+            capture_output=True,
+            text=True,
+            env=os.environ.copy(),
+            timeout=RELAY_TIMEOUT_SECONDS,
+            check=False,
+        )
+    except FileNotFoundError as error:
+        raise RuntimeError("Node.js was not found on PATH") from error
+    except subprocess.TimeoutExpired as error:
+        raise RuntimeError("timed out waiting for the GenLayer relay") from error
+
+    output = (result.stdout or "").strip().splitlines()
+    try:
+        payload = json.loads(output[-1])
+    except (IndexError, json.JSONDecodeError) as error:
+        raise RuntimeError(
+            f"unexpected relay output: {result.stdout!r} {result.stderr!r}"
+        ) from error
+    if result.returncode != 0 or not payload.get("ok"):
+        raise RuntimeError(payload.get("error", result.stderr.strip() or "relay failed"))
+    return payload
 
 
 def user_to_dict(row: sqlite3.Row | None) -> dict[str, Any] | None:
@@ -383,11 +424,29 @@ def create_dispute():
         profile = connection.execute("SELECT rate FROM profiles WHERE id = ?", (profile_id,)).fetchone()
         if role is None or profile is None:
             return jsonify({"error": "role or profile not found"}), 404
-        verdict = round((role["pay"] + profile["rate"]) / 2)
+        relay_enabled = bool(
+            os.environ.get("GENLAYER_CONTRACT_ADDR", GENLAYER_CONTRACT_ADDRESS)
+            and os.environ.get("GENLAYER_PRIVATE_KEY")
+        )
+        if relay_enabled:
+            dispute_id = f"{role_id}-{profile_id}"
+            reason = required_text(payload, "reason") or "Salary mismatch"
+            try:
+                call_dispute_relay(
+                    "submit", dispute_id, str(role["pay"]), str(profile["rate"]), reason
+                )
+                verdict_payload = call_dispute_relay("verdict", dispute_id)
+            except RuntimeError as error:
+                return jsonify({"error": f"GenLayer dispute failed: {error}"}), 502
+            verdict = verdict_payload.get("verdict", "pending")
+            status = "resolved" if verdict != "pending" else "pending"
+        else:
+            verdict = round((role["pay"] + profile["rate"]) / 2)
+            status = "resolved"
         connection.execute(
             "INSERT INTO disputes (role_id, profile_id, status, verdict, created_at) VALUES (?, ?, ?, ?, ?) "
             "ON CONFLICT(role_id, profile_id) DO UPDATE SET status = excluded.status, verdict = excluded.verdict",
-            (role_id, profile_id, "resolved", verdict, now()),
+            (role_id, profile_id, status, verdict, now()),
         )
     return jsonify({"role_id": role_id, "profile_id": profile_id, "verdict": verdict}), 201
 

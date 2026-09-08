@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+accord.db
+node_modules/
+.env
+.env.*
+!.env.example

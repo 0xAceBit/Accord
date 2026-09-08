@@ -1,0 +1,11 @@
+{
+  "name": "accord-genlayer-relay",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "relay": "node dispute_relay.js"
+  },
+  "dependencies": {
+    "genlayer-js": "^1.1.8"
+  }
+}
