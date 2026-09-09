@@ -192,6 +192,29 @@
     renderRoles(results[0]);
     renderProfiles(results[1]);
     renderMatches(results[2]);
+    populateDisputeSelectors(results[0], results[1]);
+  }
+
+  function populateDisputeSelectors(roles, profiles) {
+    var roleSelect = document.getElementById("dispute-role-select");
+    var profileSelect = document.getElementById("dispute-profile-select");
+    if (!roleSelect || !profileSelect) return;
+
+    var previousRole = roleSelect.value;
+    var previousProfile = profileSelect.value;
+    roleSelect.innerHTML = roles.length
+      ? roles.map(function (role) {
+        return '<option value="' + role.id + '">' + escapeHtml(role.title) + ' (' + role.pay + ' USDC)</option>';
+      }).join("")
+      : '<option value="">No roles posted yet</option>';
+    profileSelect.innerHTML = profiles.length
+      ? profiles.map(function (profile) {
+        return '<option value="' + profile.id + '">' + escapeHtml(profile.name) + ' (' + profile.rate + ' USDC)</option>';
+      }).join("")
+      : '<option value="">No profiles yet</option>';
+
+    if (previousRole) roleSelect.value = previousRole;
+    if (previousProfile) profileSelect.value = previousProfile;
   }
 
   function runDispute(key, roleId, profileId) {
@@ -216,6 +239,44 @@
       });
     }, 900);
   }
+
+  document.getElementById("dispute-button").addEventListener("click", function () {
+    var button = document.getElementById("dispute-button");
+    var statusEl = document.getElementById("manual-dispute-status");
+    var roleId = document.getElementById("dispute-role-select").value;
+    var profileId = document.getElementById("dispute-profile-select").value;
+    var reason = document.getElementById("dispute-reason").value.trim() || "Salary mismatch";
+
+    if (!roleId || !profileId) {
+      statusEl.innerHTML = '<p class="form-error visible">Post at least one role and one profile first.</p>';
+      return;
+    }
+
+    button.disabled = true;
+    statusEl.innerHTML = '<div class="case-panel" aria-live="polite">' +
+      '<div class="case-id">Case ' + roleId + '-' + profileId + ' · GenLayer Internet Court</div>' +
+      '<div class="case-step active">Filed — waiting for the dispute response.</div></div>';
+
+    api("/api/disputes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        role_id: Number(roleId),
+        profile_id: Number(profileId),
+        reason: reason
+      })
+    }).then(function (dispute) {
+      statusEl.innerHTML = '<div class="case-panel" aria-live="polite">' +
+        '<div class="case-id">Case ' + roleId + '-' + profileId + ' · GenLayer Internet Court</div>' +
+        '<div class="case-step active">Verdict returned</div>' +
+        '<div class="verdict">Settled at <b>' + escapeHtml(String(dispute.verdict)) + '</b> — the ruling is stored on the server.</div></div>';
+      return refreshAll();
+    }).catch(function (error) {
+      statusEl.innerHTML = '<p class="form-error visible">' + escapeHtml(error.message) + '</p>';
+    }).finally(function () {
+      button.disabled = false;
+    });
+  });
 
   document.getElementById("role-form").addEventListener("submit", function (e) {
     e.preventDefault();

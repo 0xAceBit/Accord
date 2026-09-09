@@ -237,6 +237,35 @@ button {
     display: block;
 }
 
+.manual-dispute {
+    margin-top: 32px;
+    padding-top: 28px;
+    border-top: 1px dashed var(--rule);
+}
+
+.manual-dispute-intro {
+    margin-bottom: 18px;
+}
+
+.manual-dispute .btn {
+    margin-top: 4px;
+}
+
+#manual-dispute-status {
+    margin-top: 16px;
+}
+
+.field select {
+    width: 100%;
+    font-family: var(--sans);
+    font-size: 14px;
+    padding: 10px 12px;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--panel);
+    color: var(--ink);
+}
+
 /* hero */
 .hero {
     padding: 64px 0 56px;

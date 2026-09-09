@@ -188,6 +188,27 @@
             <div id="match-list">
                 <p class="empty-note">Loading...</p>
             </div>
+
+            <div class="manual-dispute">
+                <div class="section-label">FILE A DISPUTE DIRECTLY</div>
+                <p class="clause-intro manual-dispute-intro">Choose any posted role and candidate to test the dispute flow, even when their pay figures currently match.</p>
+                <div class="field-row">
+                    <div class="field">
+                        <label for="dispute-role-select">Role</label>
+                        <select id="dispute-role-select"></select>
+                    </div>
+                    <div class="field">
+                        <label for="dispute-profile-select">Candidate</label>
+                        <select id="dispute-profile-select"></select>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="dispute-reason">Reason</label>
+                    <input id="dispute-reason" type="text" value="Salary mismatch">
+                </div>
+                <button class="btn seal" type="button" id="dispute-button">Raise dispute</button>
+                <div id="manual-dispute-status" aria-live="polite"></div>
+            </div>
         </section>
 
         <section class="clause no-border" id="dispute">
@@ -210,6 +231,7 @@
         <div class="wrap">
             <a class="wordmark" href="#top">
                 <i class="fa-solid fa-scale-balanced"></i> Accord
+                 <p style="font-style: italic;"> Fair Workplace Experience with Dispute Resolution </p>
             </a>
             <p class="copyright">© 2024 Accord</p>
         </div>
