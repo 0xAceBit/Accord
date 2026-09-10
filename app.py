@@ -19,7 +19,7 @@ app = Flask(__name__, static_folder=str(BASE_DIR), static_url_path="")
 app.secret_key = os.environ.get("ACCORD_SECRET_KEY", "dev-only-change-me")
 REQUIRE_AUTH_FOR_WRITES = os.environ.get("ACCORD_REQUIRE_AUTH", "0") == "1"
 RELAY_SCRIPT = BASE_DIR / "dispute_relay.js"
-GENLAYER_CONTRACT_ADDRESS = "0x847882ff7F8259b45a5312Bcb042256b7e159B87"
+GENLAYER_CONTRACT_ADDRESS = "0xfDe409f97C9085840aB505b378388179765a6F11"
 RELAY_TIMEOUT_SECONDS = 300
 
 
