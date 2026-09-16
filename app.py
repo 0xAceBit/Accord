@@ -9,17 +9,19 @@ from functools import wraps
 from pathlib import Path
 from typing import Any
 
+from dotenv import load_dotenv
 from flask import Flask, g, jsonify, request, send_from_directory, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(BASE_DIR / ".env")
 DATABASE_PATH = Path(os.environ.get("ACCORD_DATABASE", BASE_DIR / "accord.db"))
 
 app = Flask(__name__, static_folder=str(BASE_DIR), static_url_path="")
 app.secret_key = os.environ.get("ACCORD_SECRET_KEY", "dev-only-change-me")
 REQUIRE_AUTH_FOR_WRITES = os.environ.get("ACCORD_REQUIRE_AUTH", "0") == "1"
 RELAY_SCRIPT = BASE_DIR / "dispute_relay.js"
-GENLAYER_CONTRACT_ADDRESS = "0xfDe409f97C9085840aB505b378388179765a6F11"
+GENLAYER_CONTRACT_ADDRESS = "0x0A7d7158fE43ef669E0d937612b8F1592b4F6911"
 RELAY_TIMEOUT_SECONDS = 300
 
 

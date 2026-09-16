@@ -13,6 +13,7 @@
 //                             (use a fresh key generated in Studio — never
 //                             reuse a key that has been shared or committed)
 
+import 'dotenv/config';
 import { createClient, createAccount } from 'genlayer-js';
 import { studionet } from 'genlayer-js/chains';
 import { TransactionStatus } from 'genlayer-js/types';
