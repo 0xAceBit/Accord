@@ -20,6 +20,17 @@ import { TransactionStatus } from 'genlayer-js/types';
 
 const CONTRACT_ADDR = process.env.GENLAYER_CONTRACT_ADDR;
 const PRIVATE_KEY = process.env.GENLAYER_PRIVATE_KEY;
+const CHAIN_ID = Number(process.env.GENLAYER_CHAIN_ID || studionet.id);
+const RPC_URL = process.env.GENLAYER_RPC_URL || studionet.rpcUrls.default.http[0];
+const chain = {
+    ...studionet,
+    id: CHAIN_ID,
+    name: process.env.GENLAYER_CHAIN_NAME || studionet.name,
+    rpcUrls: {
+        ...studionet.rpcUrls,
+        default: { http: [RPC_URL] },
+    },
+};
 
 function fail(message) {
     console.log(JSON.stringify({ ok: false, error: message }));
@@ -33,7 +44,7 @@ const [, , command, ...args] = process.argv;
 
 async function main() {
     const account = createAccount(PRIVATE_KEY);
-    const client = createClient({ chain: studionet, account });
+    const client = createClient({ chain, account });
 
     // Required once before any contract interaction, per GenLayerJS docs.
     await client.initializeConsensusSmartContract();
