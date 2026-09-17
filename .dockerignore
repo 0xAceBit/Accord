@@ -1,0 +1,9 @@
+.git
+.venv
+__pycache__
+*.pyc
+node_modules
+.env
+accord.db
+Dockerfile
+.dockerignore
