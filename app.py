@@ -16,6 +16,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(BASE_DIR / ".env")
 DATABASE_PATH = Path(os.environ.get("ACCORD_DATABASE", BASE_DIR / "accord.db"))
+DATABASE_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 app = Flask(__name__, static_folder=str(BASE_DIR), static_url_path="")
 app.secret_key = os.environ.get("ACCORD_SECRET_KEY", "dev-only-change-me")
